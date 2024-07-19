@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Fetch secrets from environment variables
-codedeploy_application_name="${CODEDEPLOY_APPLICATION_NAME}"
-codedeploy_groupname="${CODEDEPLOY_GROUP_NAME}"
+codedeploy_application_name="${CODEDEPLOY_APPLICATION}"
+codedeploy_groupname="${CODEDEPLOY_GROUP}"
 aws_s3_bucket_name="${AWS_S3_BUCKET}"
 
 # Create a deployment
