@@ -82,8 +82,8 @@ jobs:
 
       - name: Create environment file for development
         run: |
-          echo 'export DEV_ENV_VARIABLES' >> cicd-helper/.cicd-variable
-          echo 'CICD_PIPELINE_ID=${{ github.run_id }}' >> cicd-helper/.cicd-variable
+          echo 'export DEV_ENV_VARIABLES' >> scripts/.cicd-variable
+          echo 'CICD_PIPELINE_ID=${{ github.run_id }}' >> scripts/.cicd-variable
 
       - name: Prepare AWS CodeDeploy
         run: |
