@@ -78,7 +78,7 @@ jobs:
           ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
 
       - name: Change file permissions
-        run: chmod +x cicd-helper/*.sh
+        run: chmod +x scripts/*.sh
 
       - name: Create environment file for development
         run: |
