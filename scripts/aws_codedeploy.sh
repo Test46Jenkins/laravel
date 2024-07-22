@@ -5,6 +5,12 @@ codedeploy_application_name="${CODEDEPLOY_APPLICATION_NAME}"
 codedeploy_groupname="${CODEDEPLOY_GROUP_NAME}"
 aws_s3_bucket_name="${AWS_S3_BUCKET}"
 
+# Check if required variables are set
+if [ -z "$codedeploy_application_name" ] || [ -z "$codedeploy_groupname" ] || [ -z "$aws_s3_bucket_name" ]; then
+  echo "Error: Required environment variables are not set."
+  exit 1
+fi
+
 # Create a deployment
 deployment_id=$(aws deploy create-deployment \
     --application-name "$codedeploy_application_name" \
@@ -23,4 +29,3 @@ echo $deployment_id > deployment_id.txt
 
 # Wait for the deployment to complete
 aws deploy wait deployment-successful --deployment-id "$deployment_id"
-
