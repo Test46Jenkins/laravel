@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - beta-development
 
 jobs:
   composer_Development:
@@ -48,7 +48,7 @@ jobs:
         run: npm install
 
       - name: Run development build
-        run: npm run
+        run: npm run dev
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
@@ -69,8 +69,8 @@ jobs:
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_Dev }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_Dev }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - name: Initialize SSH
@@ -97,15 +97,9 @@ jobs:
         run: aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }}/cicd-codedeploy/
 
       - name: Run CodeDeploy script
-        run: sh scripts/aws_codedeploy.sh
-
-      - name: Check deployment ID
-        run: cat deployment_id.txt
+        run: bash scripts/aws_codedeploy.sh
 
     env:
       CODEDEPLOY_APPLICATION_NAME: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
       CODEDEPLOY_GROUP_NAME: ${{ secrets.CODEDEPLOY_GROUP_NAME }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DEV_PIPELINE_BASH_ENV: ${{ secrets.DEV_PIPELINE_BASH_ENV }}
