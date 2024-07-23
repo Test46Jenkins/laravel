@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  Get_value_from_Parameter_Store:
+  configuration-parameter-store-name:
     runs-on: ubuntu-latest
     steps:
     - name: Set SSM Params as Env Vars
@@ -17,16 +17,19 @@ jobs:
         AWS_DEFAULT_REGION: us-east-1
       with:
         ssm-path: ${{ secrets.env_path }}
-    
-    - name: Get value from Parameter Store
-      id: parameter
-      uses: poad/get-aws-ssm-parameter@v2.0.0
-      with: 
-        parameter-name: ${{ secrets.env_path }}
-        aws-region: us-east-1
+  Get-value-from-Parameter-Store:
+    runs-on: ubuntu-latest
+    needs: Getvalue from Parameter
+    steps:
+      - name: Get value from Parameter Store
+        id: parameter
+        uses: poad/get-aws-ssm-parameter@v2.0.0
+        with: 
+          parameter-name: ${{ secrets.env_path }}
+          aws-region: us-east-1
   
-    - name: 'Another example step'
-      run: echo ${{ steps.parameter.outputs.value }}
+      - name: 'Another example step'
+        run: echo ${{ steps.parameter.outputs.value }}
       
   composer_Development:
     runs-on: ubuntu-latest
