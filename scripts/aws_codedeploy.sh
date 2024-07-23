@@ -3,7 +3,7 @@
 # Fetch secrets from environment variables
 codedeploy_application_name="Git_Application"
 codedeploy_groupname="development_group"
-aws_s3_bucket_name="laravel2024laravel"
+aws_s3_bucket_name="laravel2024larvel"
 
 # Check if required variables are set
 if [ -z "$codedeploy_application_name" ] || [ -z "$codedeploy_groupname" ] || [ -z "$aws_s3_bucket_name" ]; then
