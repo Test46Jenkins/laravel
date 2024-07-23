@@ -21,6 +21,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: configuration-parameter-store-name
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
       - name: Get value from Parameter Store
         id: parameter
         uses: poad/get-aws-ssm-parameter@v2.0.0
