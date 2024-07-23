@@ -19,7 +19,7 @@ jobs:
         ssm-path: ${{ secrets.env_path }}
   Get-value-from-Parameter-Store:
     runs-on: ubuntu-latest
-    needs: Getvalue from Parameter
+    needs: configuration-parameter-store-name
     steps:
       - name: Get value from Parameter Store
         id: parameter
@@ -33,7 +33,7 @@ jobs:
       
   composer_Development:
     runs-on: ubuntu-latest
-    needs: Get_value_from_Parameter_Store
+    needs: Get-value-from-Parameter-Store
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
