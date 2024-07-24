@@ -20,82 +20,24 @@ jobs:
 
     - name: Install Composer dependencies
       run: composer install
-
-  npm_development:
-    runs-on: ubuntu-latest
-    needs: composer_development
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '20'
-
     - name: Install npm dependencies
       run: npm install
 
-  Create_Env:
-      runs-on: ubuntu-latest
-      needs: [composer_development, npm_development ]
-      steps:
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
-        - name: Get value from Parameter Store
-          id: parameter
-          uses: poad/get-aws-ssm-parameter@v2.0.0
-          with: 
-            parameter-name: ${{ secrets.env_path }}
-            aws-region: us-east-1
-  
-        - name: 'Another example step'
-          run: echo ${{ steps.parameter.outputs.value }} >.env
-  Deploy_Development:
+  upload_to_s3:
     runs-on: ubuntu-latest
-    needs: Create_Env
+    needs: composer_development
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Initialize SSH
-        run: |
-          eval $(ssh-agent -s)
-          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
-
-      - name: Change file permissions
-        run: chmod +x scripts/*.sh
-
-      - name: Create environment file for development
-        run: |
-          echo 'export DEV_ENV_VARIABLES' >> scripts/.cicd-variable
-          echo 'CICD_PIPELINE_ID=${{ github.run_id }}' >> scripts/.cicd-variable
-
-      - name: Prepare AWS CodeDeploy
-        run: |
-          sed -i '1 a codedeploy_application_name="${{ secrets.CODEDEPLOY_APPLICATION_NAME }}"' scripts/aws_codedeploy.sh
-          sed -i '2 a codedeploy_groupname="${{ secrets.CODEDEPLOY_GROUP_NAME }}"' scripts/aws_codedeploy.sh
-          sed -i '3 a aws_s3_bucket_name="${{ secrets.AWS_S3_BUCKET }}"' scripts/aws_codedeploy.sh
-          zip -qr ${{ github.run_id }}.zip .
-
-      - name: Upload to S3
-        run: aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }}/cicd-codedeploy/
-
-      - name: Run CodeDeploy script
-        run: bash scripts/aws_codedeploy.sh
+    - name: Upload ZIP to S3
+      run: |
+        aws s3 cp laravel.zip s3://${{ secrets.AWS_S3_BUCKET }} --region us-east-2
 
     env:
       CODEDEPLOY_APPLICATION_NAME: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
       CODEDEPLOY_GROUP_NAME: ${{ secrets.CODEDEPLOY_GROUP_NAME }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
