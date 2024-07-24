@@ -23,7 +23,7 @@ jobs:
           
   Create_Env:
       runs-on: ubuntu-latest
-      needs: [composer_Development, npm_Development]
+      needs: composer_Development
       steps:
         - name: Configure AWS Credentials
           uses: aws-actions/configure-aws-credentials@v4
