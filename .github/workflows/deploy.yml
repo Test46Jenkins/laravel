@@ -22,12 +22,9 @@ jobs:
     needs: composer_Development
     steps:
       - name: Install npm dependencies
-        run: npm install
-
-      - name: Build assets for production
-        run: npm run build
-        env:
-          LARAVEL_BYPASS_ENV_CHECK: 1
+        run: |
+          npm install
+          npm run build
           
   Create_Env:
       runs-on: ubuntu-latest
