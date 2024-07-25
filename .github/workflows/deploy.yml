@@ -37,7 +37,7 @@ jobs:
           sed -i '1 a codedeploy_application_name="${{ secrets.CODEDEPLOY_APPLICATION_NAME }}"' scripts/aws_codedeploy.sh
           sed -i '2 a codedeploy_groupname="${{ secrets.CODEDEPLOY_GROUP_NAME }}"' scripts/aws_codedeploy.sh
           sed -i '3 a aws_s3_bucket_name="${{ secrets.AWS_S3_BUCKET }}"' scripts/aws_codedeploy.sh
-          --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},${{ github.run_id }}.zip,bundleType=zip
+          --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},key=cicd-codedeploy/${GITHUB_RUN_ID}.zip,bundleType=zip
     env:
       CODEDEPLOY_APPLICATION_NAME: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
       CODEDEPLOY_GROUP_NAME: ${{ secrets.CODEDEPLOY_GROUP_NAME }}
