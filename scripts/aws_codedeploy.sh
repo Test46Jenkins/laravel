@@ -2,7 +2,7 @@
 
 
 
-deploy_id=$(aws deploy create-deployment --application-name $codedeploy_application_name --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name $codedeploy_groupname --s3-location bucket=$aws_s3_bucket_name,bundleType=zip,key=cicd-codedeploy/$CI_PIPELINE_ID.zip --region us-east-2 --output text)
+deploy_id=$(aws deploy create-deployment --application-name $codedeploy_application_name --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name $codedeploy_groupname --s3-location bucket=$aws_s3_bucket_name,bundleType=zip,key=cicd-codedeploy/$CI_PIPELINE_ID.zip --region us-east-1 --output text)
 
 while :
     do
