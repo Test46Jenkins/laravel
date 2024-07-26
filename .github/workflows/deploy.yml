@@ -25,11 +25,7 @@ jobs:
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
-        - name: Get environment variables from Parameter Store
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+
         - name: Set up Node.js
           uses: actions/setup-node@v3
           with:
@@ -46,6 +42,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Get environment variables from Parameter Store
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
       - name: Sync files to S3
         run: |
             zip -r ${{ github.run_id }}.zip . #-x '*.git*' -x 'node_modules/*' -x 'vendor/*' -x '.github/*' -x 'tests/*' -x 'storage/*' -x '.idea/*'
