@@ -16,12 +16,6 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
 
-      - name: Upload vendor directory as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: vendor
-          path: vendor/
-
   npm_Development:
     runs-on: ubuntu-latest
     needs: composer_Development
@@ -44,11 +38,16 @@ jobs:
         run: npm run build
         env:
           LARAVEL_BYPASS_ENV_CHECK: 1
-      - name: zip
-        run:  zip -qr ${{ github.run_id }}.zip .
-      - name: Upload to S3
-        run: aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }}/cicd-codedeploy/
+          
+  Zip:
   
+     runs-on: ubuntu-latest
+     needs: [composer_Development, npm_Development] 
+     steps:
+     - name: zip
+       run: zip -qr ${{ github.run_id }}.zip .
+     - name: Upload to S3
+       run: aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }}/cicd-codedeploy/
   Deploy_Development:
     runs-on: ubuntu-latest
     needs: [npm_Development, composer_Development]
