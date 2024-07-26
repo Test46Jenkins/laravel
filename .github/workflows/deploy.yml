@@ -26,16 +26,13 @@ jobs:
         node-version: '20'
     - name: Install npm dependencies
       run: npm install
-    - name: zipping
-      run: |
-        zip -r ${{ github.run_id }}.zip .  # Create a ZIP file of the application
-    - name: Upload ZIP to S3
-      run: |
+    - name: zipping & Upload ZIP to S3
     - name: Prepare AWS CodeDeploy
       run: |
           sed -i '1 a codedeploy_application_name="${{ secrets.CODEDEPLOY_APPLICATION }}"' scripts/aws_codedeploy.sh
           sed -i '2 a codedeploy_groupname="${{ secrets.CODEDEPLOY_GROUPNAME }}"' scripts/aws_codedeploy.sh
           sed -i '3 a aws_s3_bucket_name="${{ secrets.AWS_S3_BUCKET }}"' scripts/aws_codedeploy.sh
+          zip -r ${{ github.run_id }}.zip .  # Create a ZIP file of the application
           aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }} --region us-east-2
     - name: AWS CodeDeploy
       run: |
