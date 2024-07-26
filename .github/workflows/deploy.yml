@@ -40,7 +40,7 @@ jobs:
     needs: [composer_development, NPM_install]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v32
+        uses: actions/checkout@v3
       - name: Sync files to S3
         run: |
             zip -r ${{ github.run_id }}.zip . #-x '*.git*' -x 'node_modules/*' -x 'vendor/*' -x '.github/*' -x 'tests/*' -x 'storage/*' -x '.idea/*'
