@@ -15,9 +15,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
-
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: Install npm dependencies
         run: npm install
       - name: Build assets for production
