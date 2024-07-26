@@ -27,7 +27,6 @@ jobs:
     - name: Install npm dependencies
       run: npm install
     - name: zipping & Upload ZIP to S3
-    - name: Prepare AWS CodeDeploy
       run: |
           sed -i '1 a codedeploy_application_name="${{ secrets.CODEDEPLOY_APPLICATION }}"' scripts/aws_codedeploy.sh
           sed -i '2 a codedeploy_groupname="${{ secrets.CODEDEPLOY_GROUPNAME }}"' scripts/aws_codedeploy.sh
