@@ -32,6 +32,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+
+      - name: Debug - List files before zipping
+        run: ls -R
+        
       - name: zip
         run: zip -qr ${{ github.run_id }}.zip .
       - name: Upload to S3
