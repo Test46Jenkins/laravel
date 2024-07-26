@@ -45,11 +45,11 @@ jobs:
       - name: Get environment variables from Parameter Store
         uses: aws-actions/configure-aws-credentials@v4
         with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Sync files to S3
         run: |
-            zip -r ${{ github.run_id }}.zip . #-x '*.git*' -x 'node_modules/*' -x 'vendor/*' -x '.github/*' -x 'tests/*' -x 'storage/*' -x '.idea/*'
+            zip -r ${{ github.run_id }}.zip .
             aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }}/${{ github.run_id }}.zip
         env:
           CODEDEPLOY_APPLICATION_NAME: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
