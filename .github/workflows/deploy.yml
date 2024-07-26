@@ -44,7 +44,7 @@ jobs:
           aws-region: us-east-2
       - name: Sync files to S3
         run: |
-            zip -qr ${{ github.run_id }}.zip . -x '*.git*' -x 'node_modules/*' -x 'vendor/*' -x '.github/*' -x 'tests/*' -x 'storage/*' -x '.idea/*'
+            zip -qr ${{ github.run_id }}.zip . #-x '*.git*' -x 'node_modules/*' -x 'vendor/*' -x '.github/*' -x 'tests/*' -x 'storage/*' -x '.idea/*'
             aws s3 cp ${{ github.run_id }}.zip s3://${{ secrets.AWS_S3_BUCKET }}/${{ github.run_id }}.zip
         env:
           CODEDEPLOY_APPLICATION_NAME: ${{ secrets.CODEDEPLOY_APPLICATION_NAME }}
