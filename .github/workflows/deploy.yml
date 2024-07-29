@@ -20,7 +20,9 @@ jobs:
       - name: Install npm dependencies
         run: npm install
       - name: Debug - List files before zipping
-        run: ls -R
+        run: |
+            ls -R \
+            echo ${{ vars.NAME }}
       - name: zip
         run: zip -r ${{ github.run_id }}.zip .
         
