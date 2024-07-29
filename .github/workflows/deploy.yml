@@ -66,6 +66,10 @@ jobs:
           sed -i '2 a codedeploy_groupname="'${{ secrets.CODEDEPLOY_GROUPNAME }}'"' scripts/aws_codedeploy.sh
           sed -i '3 a aws_s3_bucket_name="'${{ secrets.AWS_S3_BUCKET }}'"' scripts/aws_codedeploy.sh
           sed -i '4 a CI_PIPELINE_ID='${{ github.run_id }}' scripts/aws_codedeploy.sh
+          
+      - name: CodeDeploy script
+        run: cat scripts/aws_codedeploy.sh
+          
       - name: Run CodeDeploy script
         run: bash scripts/aws_codedeploy.sh
 
