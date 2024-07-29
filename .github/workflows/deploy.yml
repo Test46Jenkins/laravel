@@ -21,6 +21,9 @@ jobs:
         run: npm install
       - name: Debug - List files before zipping
         run: echo "REPO_NAME=${{ vars.NAME }}"
+      - name: Debug - Check Repository Environment Variables
+        run: |
+           echo "AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}"
       - name: zip
         run: zip -r ${{ github.run_id }}.zip .
         
