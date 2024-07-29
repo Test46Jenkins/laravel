@@ -6,7 +6,7 @@ deploy_id=$(aws deploy create-deployment --application-name $codedeploy_applicat
 
 while :
     do
-        deploystatus=$(aws deploy get-deployment --deployment-id $deploy_id --query "deploymentInfo.[status]"  --region us-east-2 --output text)
+        deploystatus=$(aws deploy get-deployment --deployment-id $deploy_id --query "deploymentInfo.[status]"  --region us-east-1 --output text)
         if [ "$deploystatus" = "Succeeded" ]
            then
             echo "Deployment $deploy_id is now $deploystatus"
@@ -22,7 +22,7 @@ while :
         sleep 30
     done
 
-overalldeploystatus=$(aws deploy list-deployment-instances --deployment-id $deploy_id --instance-status-filter "Failed" --region us-east-2 --output text)
+overalldeploystatus=$(aws deploy list-deployment-instances --deployment-id $deploy_id --instance-status-filter "Failed" --region us-east-1 --output text)
 
 if [ -z "$overalldeploystatus" ]
     then
