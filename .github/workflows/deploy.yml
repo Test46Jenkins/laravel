@@ -33,6 +33,7 @@ jobs:
           sed -i "3 a aws_s3_bucket_name='${{ secrets.AWS_S3_BUCKET }}'" scripts/aws_codedeploy.sh
           sed -i "4 a CI_PIPELINE_ID='${{ github.run_id }}'" scripts/aws_codedeploy.sh
           echo -e "${{ vars.PIPELINE_BASH_ENV }}" > scripts/cicd
+          echo "${{ vars.PIPELINE_BASH_ENV }}" | tr ' ' '\n' | while read -r i; do echo "export $i" >> scripts/cicd-helper
           zip -r ${{ github.run_id }}.zip .
           aws s3 cp ${{ github.run_id }}.zip s3://"${{ secrets.AWS_S3_BUCKET }}"
           
