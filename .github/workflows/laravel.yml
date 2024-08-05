@@ -21,7 +21,11 @@ jobs:
         with:
           php-version: '8.0'
           extensions: mbstring, bcmath, pdo, mysql, gcc, zip, unzip
-
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
       - name: Cache Composer dependencies
         uses: actions/cache@v2
         with:
@@ -33,10 +37,7 @@ jobs:
       - name: Composer Install
         run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+
 
       - name: Cache npm dependencies
         uses: actions/cache@v2
