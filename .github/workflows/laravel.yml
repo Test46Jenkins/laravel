@@ -3,7 +3,7 @@ name: Branch Push Workflow
 on:
   push:
     branches:
-      # - master
+       - main
        - staging
       # - beta-development
       # - staging-qa
