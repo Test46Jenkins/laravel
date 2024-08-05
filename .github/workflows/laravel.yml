@@ -51,7 +51,7 @@ jobs:
         run: npm install
 
       - name: Build assets for production
-        run: npm run dev
+        run: npm run build
 
       - name: Get environment variables from Parameter Store
         uses: aws-actions/configure-aws-credentials@v4
