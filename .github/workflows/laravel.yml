@@ -1,35 +1,124 @@
-name: Laravel
+name: Branch Push Workflow
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      # - master
+       - staging
+      # - beta-development
+      # - staging-qa
 
 jobs:
-  laravel-tests:
-
+  branch_push:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-      with:
-        php-version: '8.0'
-    - uses: actions/checkout@v4
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate key
-      run: php artisan key:generate
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: mbstring, bcmath, pdo, mysql, gcc, zip, unzip
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ github.ref_name }}-composer
+          restore-keys: |
+            ${{ github.ref_name }}-composer
+
+      - name: Composer Install
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ github.ref_name }}-npm
+          restore-keys: |
+            ${{ github.ref_name }}-npm
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build assets for production
+        run: npm run dev
+
+      - name: Get environment variables from Parameter Store
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+           aws-region: us-east-2
+
+      - name: Get value from Parameter Store
+        run: |
+            aws ssm get-parameter --name "v4-env-dev" --with-decryption --output text --query Parameter.Value > .env
+
+      - name: Set branch-specific variables
+        id: set-vars
+        run: |
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          if [[ "$branch" == "master" ]]; then
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.MASTER_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.MASTER_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+            echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_MASTER }}" >> $GITHUB_ENV
+            echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_MASTER }}" >> $GITHUB_ENV
+            echo "master_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_MASTER }}" >> $GITHUB_ENV
+            # aws ssm get-parameter --name "v4-env-master" --with-decryption --output text --query Parameter.Value > .env
+
+          elif [[ "$branch" == "staging" ]]; then
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+            echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_STAGING }}" >> $GITHUB_ENV
+            echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_STAGING }}" >> $GITHUB_ENV
+            echo "staging_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_STAGING }}" >> $GITHUB_ENV
+            # aws ssm get-parameter --name "v4-env-staging" --with-decryption --output text --query Parameter.Value > .env
+
+          elif [[ "$branch" == "staging-qa" ]]; then
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.BETA_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+            echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_BETA }}" >> $GITHUB_ENV
+            echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_BETA }}" >> $GITHUB_ENV
+            echo "DEV_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_BETA }}" >> $GITHUB_ENV
+            # aws ssm get-parameter --name "v4-env-staging-qa" --with-decryption --output text --query Parameter.Value > .env
+
+          elif [[ "$branch" == "beta-development" ]]; then
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.BETA_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+            echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_BETA }}" >> $GITHUB_ENV
+            echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_BETA }}" >> $GITHUB_ENV
+            echo "DEV_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_BETA }}" >> $GITHUB_ENV
+          else
+            echo "Branch not recognized"
+            exit 1
+          fi
+
+      - name: Upload artifacts and deploy
+        run: |
+          echo -e "${{ env.PIPELINE_BASH_ENV }}" > cicd-helper/.cicd-variable
+          echo CICD_PIPELINE_ID="${{ github.run_id }}" >> cicd-helper/.cicd-variable
+          sudo apt-get -y install dos2unix
+          dos2unix cicd-helper/.cicd-variable
+          touch cicd-helper/"${{ github.run_id }}".txt
+          sed -i '1 a codedeploy_application_name="'$APPLICATION_NAME'"' cicd-helper/aws_codedeploy.sh
+          sed -i '2 a codedeploy_groupname="'$DEPLOYMENT_GROUP_NAME'"' cicd-helper/aws_codedeploy.sh
+          sed -i '3 a aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}'"' cicd-helper/aws_codedeploy.sh
+          sed -i '4 a reponame="'${{ env.REPO_NAME }}'"' cicd-helper/aws_codedeploy.sh
+          sed -i '5 a branchname="'${{ github.ref_name }}'"' cicd-helper/aws_codedeploy.sh
+          sed -i '6 a github_run_id="${{ github.run_id }}"' cicd-helper/aws_codedeploy.sh
+          zip -qr ${{ github.run_id }}.zip . -x '*.git*' -x 'node_modules/*' -x '.github/*' -x 'tests/*'
+          aws s3 cp ${{ github.run_id }}.zip s3://${{ vars.AWS_S3_BUCKET_CICD }}/${{ env.REPO_NAME }}/${{ github.ref_name }}/${{ github.run_id }}.zip
+
+      - name: Create Deployment
+        run: |
+          chmod +x cicd-helper/aws_codedeploy.sh
+          sh cicd-helper/aws_codedeploy.sh
