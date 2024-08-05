@@ -105,11 +105,11 @@ jobs:
 
       - name: Upload artifacts and deploy
         run: |
-          echo -e "${{ env.PIPELINE_BASH_ENV }}" > cicd-helper/.cicd-variable
-          echo CICD_PIPELINE_ID="${{ github.run_id }}" >> cicd-helper/.cicd-variable
-          sudo apt-get -y install dos2unix
-          dos2unix cicd-helper/.cicd-variable
-          touch cicd-helper/"${{ github.run_id }}".txt
+          # echo -e "${{ env.PIPELINE_BASH_ENV }}" > cicd-helper/.cicd-variable
+          # echo CICD_PIPELINE_ID="${{ github.run_id }}" >> cicd-helper/.cicd-variable
+          # sudo apt-get -y install dos2unix
+          # dos2unix cicd-helper/.cicd-variable
+          # touch cicd-helper/"${{ github.run_id }}".txt
           sed -i '1 a codedeploy_application_name="'$APPLICATION_NAME'"' cicd-helper/aws_codedeploy.sh
           sed -i '2 a codedeploy_groupname="'$DEPLOYMENT_GROUP_NAME'"' cicd-helper/aws_codedeploy.sh
           sed -i '3 a aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}'"' cicd-helper/aws_codedeploy.sh
