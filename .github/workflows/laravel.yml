@@ -60,9 +60,9 @@ jobs:
            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
            aws-region: us-east-2
 
-      - name: Get value from Parameter Store
-        run: |
-            aws ssm get-parameter --name "v4-env-dev" --with-decryption --output text --query Parameter.Value > .env
+      # - name: Get value from Parameter Store
+      #   run: |
+      #       aws ssm get-parameter --name "v4-env-dev" --with-decryption --output text --query Parameter.Value > .env
 
       - name: Set branch-specific variables
         id: set-vars
