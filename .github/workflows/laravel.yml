@@ -110,12 +110,12 @@ jobs:
           # sudo apt-get -y install dos2unix
           # dos2unix cicd-helper/.cicd-variable
           # touch cicd-helper/"${{ github.run_id }}".txt
-          sed -i '1 a codedeploy_application_name="'$APPLICATION_NAME'"' cicd-helper/aws_codedeploy.sh
-          sed -i '2 a codedeploy_groupname="'$DEPLOYMENT_GROUP_NAME'"' cicd-helper/aws_codedeploy.sh
-          sed -i '3 a aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}'"' cicd-helper/aws_codedeploy.sh
-          sed -i '4 a reponame="'${{ env.REPO_NAME }}'"' cicd-helper/aws_codedeploy.sh
-          sed -i '5 a branchname="'${{ github.ref_name }}'"' cicd-helper/aws_codedeploy.sh
-          sed -i '6 a github_run_id="${{ github.run_id }}"' cicd-helper/aws_codedeploy.sh
+          sed -i '1 a codedeploy_application_name="'$APPLICATION_NAME'"' scripts/aws_codedeploy.sh
+          sed -i '2 a codedeploy_groupname="'$DEPLOYMENT_GROUP_NAME'"' scripts/aws_codedeploy.sh
+          sed -i '3 a aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}'"' scripts/aws_codedeploy.sh
+          # sed -i '4 a reponame="'${{ env.REPO_NAME }}'"' scripts/aws_codedeploy.sh
+          # sed -i '5 a branchname="'${{ github.ref_name }}'"' scripts/aws_codedeploy.sh
+          sed -i '6 a github_run_id="${{ github.run_id }}"' scripts/aws_codedeploy.sh
           zip -qr ${{ github.run_id }}.zip . -x '*.git*' -x 'node_modules/*' -x '.github/*' -x 'tests/*'
           aws s3 cp ${{ github.run_id }}.zip s3://${{ vars.AWS_S3_BUCKET_CICD }}/${{ env.REPO_NAME }}/${{ github.ref_name }}/${{ github.run_id }}.zip
 
