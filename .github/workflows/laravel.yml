@@ -78,8 +78,8 @@ jobs:
             # aws ssm get-parameter --name "v4-env-master" --with-decryption --output text --query Parameter.Value > .env
 
           elif [[ "$branch" == "staging" ]]; then
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+            echo "AWS_ACCESS_KEY_ID=${{ vars.STAGING_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+            echo "AWS_SECRET_ACCESS_KEY=${{ vars.STAGING_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
             echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_STAGING }}" >> $GITHUB_ENV
             echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_STAGING }}" >> $GITHUB_ENV
             echo "staging_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_STAGING }}" >> $GITHUB_ENV
