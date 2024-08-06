@@ -74,6 +74,7 @@ jobs:
             echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_MASTER }}" >> $GITHUB_ENV
             echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_MASTER }}" >> $GITHUB_ENV
             echo "master_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_MASTER }}" >> $GITHUB_ENV
+            echo "aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}" >> $GITHUB_ENV
             # aws ssm get-parameter --name "v4-env-master" --with-decryption --output text --query Parameter.Value > .env
 
           elif [[ "$branch" == "staging" ]]; then
@@ -82,6 +83,7 @@ jobs:
             echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_STAGING }}" >> $GITHUB_ENV
             echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_STAGING }}" >> $GITHUB_ENV
             echo "staging_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_STAGING }}" >> $GITHUB_ENV
+            echo "aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}" >> $GITHUB_ENV
             # aws ssm get-parameter --name "v4-env-staging" --with-decryption --output text --query Parameter.Value > .env
 
           elif [[ "$branch" == "staging-qa" ]]; then
@@ -90,6 +92,7 @@ jobs:
             echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_BETA }}" >> $GITHUB_ENV
             echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_BETA }}" >> $GITHUB_ENV
             echo "DEV_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_BETA }}" >> $GITHUB_ENV
+            echo "aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}" >> $GITHUB_ENV
             # aws ssm get-parameter --name "v4-env-staging-qa" --with-decryption --output text --query Parameter.Value > .env
 
           elif [[ "$branch" == "beta-development" ]]; then
@@ -98,6 +101,7 @@ jobs:
             echo "APPLICATION_NAME=${{ vars.APPLICATION_NAME_BETA }}" >> $GITHUB_ENV
             echo "DEPLOYMENT_GROUP_NAME=${{ vars.DEPLOYMENT_GROUP_NAME_BETA }}" >> $GITHUB_ENV
             echo "DEV_PIPELINE_BASH_ENV=${{ vars.PIPELINE_BASH_ENV_BETA }}" >> $GITHUB_ENV
+            echo "aws_s3_bucket_name="'${{ vars.AWS_S3_BUCKET_CICD }}" >> $GITHUB_ENV
           else
             echo "Branch not recognized"
             exit 1
